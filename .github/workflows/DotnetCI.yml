@@ -27,11 +27,11 @@ jobs:
       run: msbuild BugGuardian.MVC.sln /p:Configuration=Release
 
     - name: Publish the Application
-      run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=%TEMP%\publish
+      run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=${{ runner.temp }}/publish
 
     - name: Verify Publish Directory
       run: |
-        $publishPath = "$env:TEMP\publish"
+        $publishPath = "${{ runner.temp }}\publish"
         if (Test-Path $publishPath) {
           Get-ChildItem -Path $publishPath -Recurse
         } else {
@@ -40,7 +40,7 @@ jobs:
 
     - name: List Files in Publish Directory
       run: |
-        $publishPath = "$env:TEMP\publish"
+        $publishPath = "${{ runner.temp }}\publish"
         if (Test-Path $publishPath) {
           Get-ChildItem -Path $publishPath -Recurse | Out-File -FilePath publish_contents.txt
           Get-Content publish_contents.txt
@@ -52,4 +52,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dotnet-core-app
-        path: ${{ env.TEMP }}/publish
+        path: ${{ runner.temp }}/publish
