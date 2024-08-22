@@ -70,14 +70,13 @@ jobs:
           Write-Output "Artifact directory exists."
         } else {
           Write-Output "Artifact directory does not exist."
-        }
 
     - name: Configure WinRM
       shell: pwsh
       run: |
-        powershell.exe -Command "winrm set winrm/config/client @{TrustedHosts='${{ secrets.WINDOWS_SERVER_HOST }}'}"
+        powershell.exe -Command "winrm set winrm/config/client '@{TrustedHosts=\"*\"}'"
         powershell.exe -Command "Start-Service WinRM"
-        powershell.exe -Command "winrm set winrm/config/service/auth @{Basic='true'}"
+        powershell.exe -Command "winrm set winrm/config/service/auth '@{Basic=\"true\"}'"
 
     - name: Deploy to Windows Server
       env:
