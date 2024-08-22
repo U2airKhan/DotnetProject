@@ -1,12 +1,8 @@
 name: CI
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
   workflow_dispatch:
-    
+
 jobs:
   build:
     runs-on: [windows-2019]
@@ -26,15 +22,18 @@ jobs:
     - name: Build the Solution
       run: msbuild BugGuardian.MVC.sln /p:Configuration=Release
     
+    - name: List Files in Workspace
+      run: dir /s /b
+    
     - name: Publish the Application
       run: |
-        msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=./publish
+        msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=$(Build.ArtifactStagingDirectory)/publish
 
     - name: List Files in Publish Directory
-      run: dir ./publish
+      run: dir $(Build.ArtifactStagingDirectory)/publish
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: dotnet-core-app
-        path: ./publish
+        path: $(Build.ArtifactStagingDirectory)/publish
