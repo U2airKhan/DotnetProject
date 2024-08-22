@@ -29,14 +29,14 @@ jobs:
     - name: Publish the Application
       run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=${{ runner.temp }}/publish
 
-    - name: Verify Publish Directory
+    - name: List Contents of Publish Directory
       run: |
         $publishPath = "${{ runner.temp }}\publish"
         Get-ChildItem -Path $publishPath -Recurse
 
     - name: Copy All Files
       run: |
-        $sourcePath = "${{ runner.temp }}\publish\_PublishWebsites\BugGuardian.MVC.TestWebApp"
+        $sourcePath = "${{ runner.temp }}\publish\_PublishedWebsites\BugGuardian.MVC.TestWebApp"
         $destinationPath = "${{ runner.temp }}\filtered"
         if (-not (Test-Path $destinationPath)) {
           New-Item -ItemType Directory -Path $destinationPath
@@ -46,7 +46,7 @@ jobs:
     - name: Verify Filtered Directory
       run: |
         $filteredPath = "${{ runner.temp }}\filtered"
-        if (Test-Path $filteredPath)) {
+        if (Test-Path $filteredPath) {
           Get-ChildItem -Path $filteredPath -Recurse
         } else {
           Write-Output "The directory $filteredPath does not exist."
