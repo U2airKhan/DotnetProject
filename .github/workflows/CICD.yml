@@ -70,9 +70,10 @@ jobs:
         }
 
     - name: Configure WinRM
+      shell: pwsh
       run: |
-        winrm set winrm/config/client @{TrustedHosts="${{ secrets.WINDOWS_SERVER_HOST }}"}
-        Start-Service WinRM
+        powershell.exe -Command "winrm set winrm/config/client @{TrustedHosts='${{ secrets.WINDOWS_SERVER_HOST }}'}"
+        powershell.exe -Command "Start-Service WinRM"
 
     - name: Deploy to Windows Server
       env:
