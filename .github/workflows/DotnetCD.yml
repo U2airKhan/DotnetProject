@@ -1,4 +1,4 @@
-name: Deploy to Windows Server
+name: Deploy
 
 on:
   workflow_run:
@@ -23,7 +23,15 @@ jobs:
     - name: List Downloaded Artifact
       run: |
         echo "Listing contents of downloaded artifact directory:"
-        ls ${{ runner.temp }}/artifact
+        ls -al ${{ runner.temp }}/artifact
+
+    - name: Check Artifact Directory
+      run: |
+        if [ -d "${{ runner.temp }}/artifact" ]; then
+          echo "Artifact directory exists."
+        else
+          echo "Artifact directory does not exist."
+        fi
 
     - name: Deploy to Windows Server
       env:
