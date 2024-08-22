@@ -29,6 +29,15 @@ jobs:
     - name: Publish the Application
       run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=%TEMP%\publish
 
+    - name: Verify Publish Directory
+      run: |
+        $publishPath = "$env:TEMP\publish"
+        if (Test-Path $publishPath) {
+          Get-ChildItem -Path $publishPath -Recurse
+        } else {
+          Write-Output "The directory $publishPath does not exist."
+        }
+
     - name: List Files in Publish Directory
       run: |
         $publishPath = "$env:TEMP\publish"
@@ -43,4 +52,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dotnet-core-app
-        path: $env:TEMP\publish
+        path: ${{ env.TEMP }}/publish
