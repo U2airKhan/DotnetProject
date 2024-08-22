@@ -18,7 +18,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: dotnet-core-app
-        path: ${{ runner.temp }}\artifact
+        path: ${{ runner.temp }}/artifact
 
     - name: List Downloaded Artifact
       run: |
