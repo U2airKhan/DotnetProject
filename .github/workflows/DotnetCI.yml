@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: [windows-2019]
+    runs-on: windows-2019
 
     steps:
     - uses: actions/checkout@v2
@@ -25,17 +25,22 @@ jobs:
     
     - name: Build the Solution
       run: msbuild BugGuardian.MVC.sln /p:Configuration=Release
-    
+
     - name: Publish the Application
-      run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=%RUNNER_TEMP%/publish
+      run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=%TEMP%\publish
 
     - name: List Files in Publish Directory
       run: |
-        Get-ChildItem -Path "$env:RUNNER_TEMP\publish" -Recurse | Out-File -FilePath publish_contents.txt
-        Get-Content publish_contents.txt
+        $publishPath = "$env:TEMP\publish"
+        if (Test-Path $publishPath) {
+          Get-ChildItem -Path $publishPath -Recurse | Out-File -FilePath publish_contents.txt
+          Get-Content publish_contents.txt
+        } else {
+          Write-Output "The directory $publishPath does not exist."
+        }
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: dotnet-core-app
-        path: %RUNNER_TEMP%/publish
+        path: $env:TEMP\publish
