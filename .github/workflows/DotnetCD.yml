@@ -18,16 +18,16 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: dotnet-core-app
-        path: ${{ runner.temp }}/artifact
+        path: ${{ runner.temp }}\filtered
 
     - name: List Downloaded Artifact
       run: |
         echo "Listing contents of downloaded artifact directory:"
-        dir ${{ runner.temp }}\artifact
+        dir ${{ runner.temp }}\filtered
 
     - name: Check Artifact Directory
       run: |
-        if (Test-Path "${{ runner.temp }}\artifact") {
+        if (Test-Path "${{ runner.temp }}\filtered") {
           Write-Output "Artifact directory exists."
         } else {
           Write-Output "Artifact directory does not exist."
@@ -40,7 +40,7 @@ jobs:
         SERVER_HOST: ${{ secrets.WINDOWS_SERVER_HOST }}
       run: |
         echo "Starting deployment to Windows Server"
-        $sourcePath = "${{ runner.temp }}\artifact\*"
+        $sourcePath = "${{ runner.temp }}\filtered\*"
         $destinationPath = "C:\inetpub\wwwroot\dotnetsample"
         if (-not (Test-Path $destinationPath)) { New-Item -ItemType Directory -Path $destinationPath }
         Copy-Item -Path $sourcePath -Destination $destinationPath -Recurse
