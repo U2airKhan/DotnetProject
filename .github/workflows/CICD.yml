@@ -69,6 +69,11 @@ jobs:
           Write-Output "Artifact directory does not exist."
         }
 
+    - name: Configure WinRM
+      run: |
+        winrm set winrm/config/client @{TrustedHosts="${{ secrets.WINDOWS_SERVER_HOST }}"}
+        Start-Service WinRM
+
     - name: Deploy to Windows Server
       env:
         SERVER_USER: ${{ secrets.WINDOWS_SERVER_USER }}
