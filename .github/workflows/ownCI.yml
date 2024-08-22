@@ -29,4 +29,4 @@ jobs:
       - name: List content from publish path
         run: |
          $publishpath = "${{runner.temp}}\publish"
-         Get-Children -Path $publishpath -recursive          
+         Get-ChildItem -Path $publishpath -recursive          
