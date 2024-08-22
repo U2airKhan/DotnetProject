@@ -29,9 +29,14 @@ jobs:
     - name: Publish the Application
       run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=${{ runner.temp }}/publish
 
+    - name: List Contents of Publish Directory
+      run: |
+        $publishPath = "${{ runner.temp }}\publish"
+        Get-ChildItem -Path $publishPath -Recurse
+
     - name: Filter DLL Files
       run: |
-        $sourcePath = "${{ runner.temp }}\publish\_PublishWebsites\BugGuardian.MVC.TestWebApp"
+        $sourcePath = "${{ runner.temp }}\publish\_PublishedWebsites\BugGuardian.MVC.TestWebApp"
         $destinationPath = "${{ runner.temp }}\filtered"
         if (-not (Test-Path $destinationPath)) {
           New-Item -ItemType Directory -Path $destinationPath
