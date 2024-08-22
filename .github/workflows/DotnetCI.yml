@@ -29,27 +29,26 @@ jobs:
     - name: Publish the Application
       run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=${{ runner.temp }}/publish
 
-    - name: Verify Publish Directory
+    - name: Filter DLL Files
       run: |
-        $publishPath = "${{ runner.temp }}\publish"
-        if (Test-Path $publishPath) {
-          Get-ChildItem -Path $publishPath -Recurse
-        } else {
-          Write-Output "The directory $publishPath does not exist."
+        $sourcePath = "${{ runner.temp }}\publish\_PublishWebsites\BugGuardian.MVC.TestWebApp"
+        $destinationPath = "${{ runner.temp }}\filtered"
+        if (-not (Test-Path $destinationPath)) {
+          New-Item -ItemType Directory -Path $destinationPath
         }
+        Get-ChildItem -Path $sourcePath -Filter *.dll -Recurse | Copy-Item -Destination $destinationPath
 
-    - name: List Files in Publish Directory
+    - name: Verify Filtered Directory
       run: |
-        $publishPath = "${{ runner.temp }}\publish"
-        if (Test-Path $publishPath) {
-          Get-ChildItem -Path $publishPath -Recurse | Out-File -FilePath publish_contents.txt
-          Get-Content publish_contents.txt
+        $filteredPath = "${{ runner.temp }}\filtered"
+        if (Test-Path $filteredPath) {
+          Get-ChildItem -Path $filteredPath -Recurse
         } else {
-          Write-Output "The directory $publishPath does not exist."
+          Write-Output "The directory $filteredPath does not exist."
         }
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: dotnet-core-app
-        path: ${{ runner.temp }}/publish
+        path: ${{ runner.temp }}/filtered
