@@ -91,9 +91,7 @@ jobs:
         if (-not (Test-Path $destinationPath)) { New-Item -ItemType Directory -Path $destinationPath }
         Copy-Item -Path $sourcePath -Destination $destinationPath -Recurse
         Invoke-Command -ComputerName $env:SERVER_HOST -Credential (New-Object PSCredential($env:SERVER_USER, (ConvertTo-SecureString $env:SERVER_PASSWORD -AsPlainText -Force))) -ScriptBlock {
-          # Directly running the deployment script
-          # Add your deployment script commands here
-          Write-Output "Deployment script running..."
-          # Example command
-          # & "C:\path\to\your\deployment\script.ps1"
-        }
+          param ($sourcePath, $destinationPath)
+          Copy-Item -Path $sourcePath -Destination $destinationPath -Recurse
+          Write-Output "Files copied to $destinationPath"
+        } -ArgumentList $sourcePath, $destinationPath
