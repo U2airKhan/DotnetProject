@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-2019
 
     steps:
     - name: Checkout Repository
@@ -18,20 +18,20 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: dotnet-core-app
-        path: ${{ runner.temp }}/artifact
+        path: ${{ runner.temp }}\artifact
 
     - name: List Downloaded Artifact
       run: |
         echo "Listing contents of downloaded artifact directory:"
-        ls -al ${{ runner.temp }}/artifact
+        dir ${{ runner.temp }}\artifact
 
     - name: Check Artifact Directory
       run: |
-        if [ -d "${{ runner.temp }}/artifact" ]; then
-          echo "Artifact directory exists."
-        else
-          echo "Artifact directory does not exist."
-        fi
+        if (Test-Path "${{ runner.temp }}\artifact") {
+          Write-Output "Artifact directory exists."
+        } else {
+          Write-Output "Artifact directory does not exist."
+        }
 
     - name: Deploy to Windows Server
       env:
@@ -40,9 +40,8 @@ jobs:
         SERVER_HOST: ${{ secrets.WINDOWS_SERVER_HOST }}
       run: |
         echo "Starting deployment to Windows Server"
-        sudo apt-get install -y powershell
-        echo "\$sourcePath = '${{ runner.temp }}\artifact\*'" > deploy.ps1
-        echo "\$destinationPath = 'C:\inetpub\wwwroot\dotnetsample'" >> deploy.ps1
-        echo "if (-not (Test-Path \$destinationPath)) { New-Item -ItemType Directory -Path \$destinationPath }" >> deploy.ps1
-        echo "Copy-Item -Path \$sourcePath -Destination \$destinationPath -Recurse" >> deploy.ps1
-        pwsh -Command "Invoke-Command -ComputerName $env:SERVER_HOST -Credential (New-Object PSCredential('$env:SERVER_USER', (ConvertTo-SecureString '$env:SERVER_PASSWORD' -AsPlainText -Force))) -ScriptBlock {& 'C:\path\to\deploy.ps1'}"
+        $sourcePath = "${{ runner.temp }}\artifact\*"
+        $destinationPath = "C:\inetpub\wwwroot\dotnetsample"
+        if (-not (Test-Path $destinationPath)) { New-Item -ItemType Directory -Path $destinationPath }
+        Copy-Item -Path $sourcePath -Destination $destinationPath -Recurse
+        Invoke-Command -ComputerName $env:SERVER_HOST -Credential (New-Object PSCredential($env:SERVER_USER, (ConvertTo-SecureString $env:SERVER_PASSWORD -AsPlainText -Force))) -ScriptBlock { & "C:\path\to\deploy.ps1" }
