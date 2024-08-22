@@ -25,11 +25,6 @@ jobs:
     - name: Publish the Application
       run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=${{ runner.temp }}/publish
 
-    - name: List Contents of Publish Directory
-      run: |
-        $publishPath = "${{ runner.temp }}\publish"
-        Get-ChildItem -Path $publishPath -Recurse
-
     - name: Copy All Files
       run: |
         $sourcePath = "${{ runner.temp }}\publish\_PublishedWebsites\BugGuardian.MVC.TestWebApp"
@@ -53,3 +48,8 @@ jobs:
       with:
         name: dotnet-core-app
         path: ${{ runner.temp }}/filtered
+
+    - name: List Uploaded Artifacts
+      run: |
+        echo "Listing uploaded artifacts:"
+        ls ${{ runner.temp }}/filtered
