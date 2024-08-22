@@ -94,4 +94,4 @@ jobs:
           param ($sourcePath, $destinationPath)
           Copy-Item -Path $sourcePath -Destination $destinationPath -Recurse
           Write-Output "Files copied to $destinationPath"
-        } -ArgumentList $sourcePath, $destinationPath
+        } -ArgumentList "C:\artifact\*", "C:\inetpub\wwwroot\dotnetsample"
