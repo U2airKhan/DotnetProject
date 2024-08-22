@@ -79,6 +79,10 @@ jobs:
         Start-Service WinRM
         winrm set winrm/config/service/auth '@{Basic="true"}'
 
+    - name: Copy Deploy Script to Temp Directory
+      run: |
+        Copy-Item -Path .\scripts\deploy.ps1 -Destination ${{ runner.temp }}\deploy.ps1
+
     - name: Copy Deploy Script to Remote Server
       env:
         SERVER_USER: ${{ secrets.WINDOWS_SERVER_USER }}
