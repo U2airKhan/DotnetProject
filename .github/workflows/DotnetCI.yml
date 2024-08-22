@@ -25,16 +25,17 @@ jobs:
     
     - name: Build the Solution
       run: msbuild BugGuardian.MVC.sln /p:Configuration=Release
-
+    
     - name: Publish the Application
-      run: |
-        msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=$(Build.ArtifactStagingDirectory)/publish
+      run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=%RUNNER_TEMP%/publish
 
     - name: List Files in Publish Directory
-      run: Get-ChildItem -Path $(Build.ArtifactStagingDirectory)/publish -Recurse | Out-File -FilePath publish_contents.txt; type publish_contents.txt
+      run: |
+        Get-ChildItem -Path "$env:RUNNER_TEMP\publish" -Recurse | Out-File -FilePath publish_contents.txt
+        Get-Content publish_contents.txt
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: dotnet-core-app
-        path: $(Build.ArtifactStagingDirectory)/publish
+        path: %RUNNER_TEMP%/publish
