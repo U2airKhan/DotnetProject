@@ -89,9 +89,9 @@ jobs:
         $sourcePath = "${{ runner.temp }}\artifact\*"
         $destinationPath = "C:\inetpub\wwwroot\dotnetsample"
         if (-not (Test-Path $destinationPath)) { New-Item -ItemType Directory -Path $destinationPath }
-        Copy-Item -Path $sourcePath -Destination $destinationPath -Recurse
         Invoke-Command -ComputerName $env:SERVER_HOST -Credential (New-Object PSCredential($env:SERVER_USER, (ConvertTo-SecureString $env:SERVER_PASSWORD -AsPlainText -Force))) -ScriptBlock {
           param ($sourcePath, $destinationPath)
+          if (-not (Test-Path $sourcePath)) { Write-Error "Source path $sourcePath does not exist." }
           Copy-Item -Path $sourcePath -Destination $destinationPath -Recurse
           Write-Output "Files copied to $destinationPath"
-        } -ArgumentList "C:\artifact\*", "C:\inetpub\wwwroot\dotnetsample"
+        } -ArgumentList "${{ runner.temp }}\artifact\*", "C:\inetpub\wwwroot\dotnetsample"
