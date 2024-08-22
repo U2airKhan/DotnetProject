@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # Ya kisi aur appropriate runner
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Repository
@@ -27,14 +27,9 @@ jobs:
         SERVER_HOST: ${{ secrets.WINDOWS_SERVER_HOST }}
       run: |
         echo "Starting deployment to Windows Server"
-        # Install PowerShell Remoting if not already installed
         sudo apt-get install -y powershell
-
-        # Create a PowerShell script for deployment
-        echo "\$sourcePath = 'C:\path\to\artifact\*'" > deploy.ps1
+        echo "\$sourcePath = '${{ runner.temp }}\artifact\*'" > deploy.ps1
         echo "\$destinationPath = 'C:\inetpub\wwwroot\dotnetsample'" >> deploy.ps1
         echo "if (-not (Test-Path \$destinationPath)) { New-Item -ItemType Directory -Path \$destinationPath }" >> deploy.ps1
         echo "Copy-Item -Path \$sourcePath -Destination \$destinationPath -Recurse" >> deploy.ps1
-        
-        # Execute the PowerShell script on the remote server
         pwsh -Command "Invoke-Command -ComputerName $env:SERVER_HOST -Credential (New-Object PSCredential('$env:SERVER_USER', (ConvertTo-SecureString '$env:SERVER_PASSWORD' -AsPlainText -Force))) -ScriptBlock {& 'C:\path\to\deploy.ps1'}"
