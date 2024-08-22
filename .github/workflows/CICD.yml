@@ -50,6 +50,9 @@ jobs:
         name: dotnet-core-app
         path: ${{ runner.temp }}/filtered
 
+    - name: Get Runner IP Address
+      run: curl -s https://api.ipify.org
+
     - name: Download Artifact
       uses: actions/download-artifact@v3
       with:
@@ -74,6 +77,7 @@ jobs:
       run: |
         powershell.exe -Command "winrm set winrm/config/client @{TrustedHosts='${{ secrets.WINDOWS_SERVER_HOST }}'}"
         powershell.exe -Command "Start-Service WinRM"
+        powershell.exe -Command "winrm set winrm/config/service/auth @{Basic='true'}"
 
     - name: Deploy to Windows Server
       env:
