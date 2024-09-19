@@ -1,0 +1,26 @@
+name: Continous Integration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+    
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
+    
+    - name: Restore NuGet packages
+      run: nuget restore BugGuardian.MVC.sln
+    
+    - name: Build the Solution
+      run: msbuild BugGuardian.MVC.sln /p:Configuration=Release
+
+    - name: Publish the Application
+      run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=${{ runner.temp }}/publish
