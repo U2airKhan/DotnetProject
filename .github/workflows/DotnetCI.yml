@@ -1,6 +1,9 @@
 name: CI
 
 on:
+  push:
+   branches:
+   - 'master'
   workflow_dispatch:
 
 jobs:
@@ -24,32 +27,3 @@ jobs:
 
     - name: Publish the Application
       run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=${{ runner.temp }}/publish
-
-    - name: Copy All Files
-      run: |
-        $sourcePath = "${{ runner.temp }}\publish\_PublishedWebsites\BugGuardian.MVC.TestWebApp"
-        $destinationPath = "${{ runner.temp }}\filtered"
-        if (-not (Test-Path $destinationPath)) {
-          New-Item -ItemType Directory -Path $destinationPath
-        }
-        Copy-Item -Path $sourcePath\* -Destination $destinationPath -Recurse
-
-    - name: Verify Filtered Directory
-      run: |
-        $filteredPath = "${{ runner.temp }}\filtered"
-        if (Test-Path $filteredPath) {
-          Get-ChildItem -Path $filteredPath -Recurse
-        } else {
-          Write-Output "The directory $filteredPath does not exist."
-        }
-
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: dotnet-core-app
-        path: ${{ runner.temp }}/filtered
-
-    - name: List Uploaded Artifacts
-      run: |
-        echo "Listing uploaded artifacts:"
-        ls ${{ runner.temp }}/filtered
