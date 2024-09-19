@@ -1,29 +1,35 @@
-name: CI
+name: CI  
 
-on:
-  push:
-   branches:
-   - 'master'
-  workflow_dispatch:
+on:  
+  push:  
+   branches:  
+   - 'master'  
+  workflow_dispatch:  
 
-jobs:
-  build:
-    runs-on: windows-2019
+jobs:  
+  build:  
+    runs-on: windows-2019  
 
-    steps:
-    - uses: actions/checkout@v2
+    steps:  
+    - uses: actions/checkout@v2  
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1
+    - name: Setup MSBuild  
+      uses: microsoft/setup-msbuild@v1  
     
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.5
+    - name: Setup NuGet  
+      uses: NuGet/setup-nuget@v1.0.5  
     
-    - name: Restore NuGet packages
-      run: nuget restore BugGuardian.MVC.sln
+    - name: Restore NuGet packages  
+      run: nuget restore BugGuardian.MVC.sln  
     
-    - name: Build the Solution
-      run: msbuild BugGuardian.MVC.sln /p:Configuration=Release
+    - name: Build the Solution  
+      run: msbuild BugGuardian.MVC.sln /p:Configuration=Release  
 
-    - name: Publish the Application
-      run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=${{ runner.temp }}/publish
+    - name: Publish the Application  
+      run: msbuild BugGuardian.MVC.sln /p:Configuration=Release /p:OutputPath=${{ runner.temp }}/publish  
+
+    - name: Upload Artifacts  
+      uses: actions/upload-artifact@v2  
+      with:  
+        name: published-artifact  
+        path: ${{ runner.temp }}/publish
